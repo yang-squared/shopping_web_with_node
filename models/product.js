@@ -1,3 +1,29 @@
+const mongoose = require('mongoose');
+
+const Schegma = mongoose.Schema;
+
+const productSchegma = new Schegma({
+  title: {
+    type: String,
+    required: true
+  },
+  price: {
+    type: Number,
+    required: true
+  },
+  imageUrl: {
+    type: String,
+    required: true
+  },
+  description:{
+    type: String,
+    required: true
+  }
+})
+
+module.exports = mongoose.model('Product', productSchegma)
+
+
 // const mongodb = require('mongodb');
 // const getDb = require('../util/database').getDb;
 
