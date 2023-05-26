@@ -18,6 +18,11 @@ const productSchegma = new Schegma({
   description:{
     type: String,
     required: true
+  },
+  userId: {
+    type: Schegma.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 })
 
