@@ -1,5 +1,5 @@
 const Product = require('../models/product');
-  
+
   exports.getProducts = (req, res, next) => {
    Product.find()
    .then(products => {
@@ -46,9 +46,10 @@ const Product = require('../models/product');
 
   exports.getCart = (req, res, next) => {
     req.user
-    .getCart()
-    .then(products => {
-          res.render('shop/cart', {
+    .populate('cart.items.productId')
+    .then(user => {
+      const products = user.cart.items;
+        res.render('shop/cart', {
           pageTitle: 'Your Cart',
           path: '/cart',
           products: products
@@ -105,7 +106,7 @@ exports.postCart = (req, res, next) => {
 exports.postCartDeleteProducts = (req, res, next) => {
   const prodId = req.body.productId;
   req.user
-    .deleteByPk(prodId)
+    .removeItemFromCart(prodId)
     .then(result => {
       res.redirect('/cart');
     })
