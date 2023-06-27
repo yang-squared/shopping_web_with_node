@@ -9,12 +9,13 @@ const mongodbstore = require('connect-mongodb-session')(session);
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
+const mongodb_Uri = 'mongodb+srv://user1:keWCTShXDqb0x84U@cluster0.h9b9gd7.mongodb.net/shop';
+
 const app = express();
-const mongodbUri = 'mongodb+srv://user1:keWCTShXDqb0x84U@cluster0.h9b9gd7.mongodb.net/shop';
 const store = new mongodbstore({
-    uri: mongodbUri,
+    uri: mongodb_Uri,
     collection: 'sessions'
-})
+});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -34,6 +35,20 @@ app.use(
     })
 );
 
+app.use((req, res, next) => {
+    if (!req.session.user) {
+        return next();
+      }
+    User.findById(req.session.user._id)
+        .then(user => {
+            req.user = user;
+            next();
+        })
+        .catch(err => {
+            console.log(err);
+        })
+})
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
@@ -41,7 +56,7 @@ app.use(authRoutes);
 app.use(errorController.get404);
 
 mongoose
-    .connect(mongodbUri)
+    .connect(mongodb_Uri)
     .then(result => {
         User.findOne().then(user => {
             if (!user) {

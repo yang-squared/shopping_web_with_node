@@ -52,7 +52,7 @@ userSchegma.methods.addToCart = function (product) {
     return this.save();
 };
 
-userSchegma.methods.removeItemFromCart = function (productId) {
+userSchegma.methods.removeFromCart = function (productId) {
     const updatedCartItems = this.cart.items.filter(item => {
         return item.productId.toString() !== productId.toString();
     });
