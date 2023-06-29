@@ -5,7 +5,7 @@ const { schema } = require('./product');
 const Schegma = mongoose.Schema;
 
 const userSchegma = new Schegma({
-    name: {
+    password: {
         type: String,
         required: true
     },

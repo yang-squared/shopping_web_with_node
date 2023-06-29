@@ -29,3 +29,35 @@ exports.postLogout = (req, res, next) => {
         res.redirect('/');
     });
 };
+
+exports.getSignup = (req, res, next) => {
+    res.render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'signup',
+        isAuthenticated: false
+    });
+};
+
+exports.postSignup = (req, res, next) => {
+    const email = req.body.email;
+    const password = req.body.password;
+    const comfirmpassword = req.body.comfirmpassword;
+    User.findOne({ email: email })
+    .then(userDoc => {
+        if (userDoc) {
+            return res.redirect('/signup');
+        }
+        const user = new User({
+            email: email,
+            password: password,
+            cart: { items: [] }
+        });
+        return user.save();
+    })
+    .then(result => {
+        res.redirect('/login');
+    })
+    .catch(err => {
+        console.log(err);
+    });
+};
