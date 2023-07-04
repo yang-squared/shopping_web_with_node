@@ -3,10 +3,16 @@ const bcrypt = require('bcryptjs');
 const User = require("../models/user");
 
 exports.getLogin = (req, res, next) => {
+    let message = req.flash('error');
+    if(message.length > 0) {
+        message  = message[0];
+    } else {
+        message = null;
+    }
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'login',
-        isAuthenticated: false
+        errorMessage: message
     });
 };
 
@@ -16,6 +22,7 @@ exports.postLogin = (req, res, next) => {
     User.findOne({ email: email })
         .then(user => {
             if (!user) {
+                req.flash('error', ' 입력하신 아이디 정보가 없습니다. 다시 입력해주세요.');
                 return res.redirect('/login');
             }
             bcrypt.compare(password, user.password)
@@ -28,6 +35,7 @@ exports.postLogin = (req, res, next) => {
                             return res.redirect('/');
                         });
                     }
+                    req.flash('error', ' 비밀번호를 잘못 입력했습니다. 다시 입력해주세요.');
                     res.redirect('/login')
                 })
                 .catch(err => {
@@ -48,10 +56,16 @@ exports.postLogout = (req, res, next) => {
 };
 
 exports.getSignup = (req, res, next) => {
+    let message = req.flash('error');
+    if(message.length > 0 ) {
+        message = message[0];
+    } else {
+        message = null;
+    }
     res.render('auth/signup', {
         path: '/signup',
         pageTitle: 'signup',
-        isAuthenticated: false
+        errorMessage: message
     });
 };
 
@@ -62,6 +76,10 @@ exports.postSignup = (req, res, next) => {
     User.findOne({ email: email })
         .then(userDoc => {
             if (userDoc) {
+                req.flash('error', '사용할 수 없는 이메일입니다.');
+                return res.redirect('/signup');
+            } else if (password != comfirmpassword) {
+                req.flash('error', '비밀번호가 다릅니다.');
                 return res.redirect('/signup');
             }
             return bcrypt
