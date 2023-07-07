@@ -13,6 +13,8 @@ const userSchegma = new Schegma({
         type: String,
         required: true
     },
+    resetToken: String,
+    resetTokenExpiration: Date,
     cart: {
         items: [{
             productId: {
