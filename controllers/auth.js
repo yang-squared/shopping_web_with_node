@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 // const transporter = require('transporter');
+const { validationResult } = require('express-validator');
 
 const User = require("../models/user");
 
@@ -77,15 +78,21 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const comfirmpassword = req.body.comfirmpassword;
+    const errors =  validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422)
+        .render('auth/signup', {
+            path: '/signup',
+            pageTitle: 'signup',
+            errorMessage: errors.array()[0].msg
+        });
+    }
     User.findOne({ email: email })
         .then(userDoc => {
             if (userDoc) {
                 req.flash('error', '사용할 수 없는 이메일입니다.');
                 return res.redirect('/signup');
-            } else if (password != comfirmpassword) {
-                req.flash('error', '비밀번호가 다릅니다.');
-                return res.redirect('/signup');
-            }
+            } 
             return bcrypt
                 .hash(password, 12)
                 .then(hashpassword => {
@@ -177,10 +184,39 @@ exports.getUpdatepw =  (req, res, next) => {
         path: '/update-pw',
         pageTitle: 'Update Password',
         errorMessage: message,
-        userId: user_id.toString()
+        userId: user_id.toString(),
+        passwordToken: token
     });
     })
     .catch(err =>{
         console.log(err)
     })
 } 
+
+exports.postUpdatepw = (req, res, next) => {
+    const updatepw = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+
+    User.findOne({
+        resetToken: passwordToken, 
+        resetTokenExpiration:{$gt: Date.now()},
+        _id: userId
+    })
+    .then(user => {
+        resetUser = user;
+        return bcrypt.hash(newPassword, 12); 
+    })
+    .then(hashedPassword => {
+        resetUser.password = hashedPassword;
+        resetUser.resetToken = undefined;
+        resetUser.resetTokenExpiration = undefined;
+        return resetUser.save();
+    })
+    .then(result => {
+        res.redirect('/login');
+    })
+    .catch(err => {
+        console.log(err);
+    });
+}
