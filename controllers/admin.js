@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
@@ -50,7 +52,9 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     })
 };
 
@@ -76,7 +80,9 @@ exports.getEditProduct = (req, res, next) => {
       })
     })
   .catch(err => {
-    console.log(err)
+    const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
   })
 };
 
@@ -124,7 +130,9 @@ exports.postEditProduct = (req, res, next) => {
     }
   )
   .catch(err => {
-      console.log(err);
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
   })
 };
 
@@ -140,7 +148,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     })
 };
 
@@ -152,6 +162,8 @@ exports.postDeleteProducts = (req, res, next) => {
       res.redirect('/admin/products');
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     })
 };

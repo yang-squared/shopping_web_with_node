@@ -86,7 +86,9 @@ exports.postLogin = (req, res, next) => {
             })
         })
         .catch(err => {
-            console.log(err)
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         })
 };
 
@@ -120,8 +122,10 @@ exports.getSignup = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log(errors.array());
         return res.status(422)
             .render('auth/signup', {
                 path: '/signup',
@@ -147,16 +151,18 @@ exports.postSignup = (req, res, next) => {
         })
         .then(result => {
             res.redirect('/login');
-            return transporter.sendMail({
-                to: email,
-                from: 'example@nodeTest.com',
-                subject: 'Signup success',
-                html: '<h1>회원가입에 성공하셨습니다.</h1>'
-            });
+            // return transporter.sendMail({
+            //     to: email,
+            //     from: 'example@nodeTest.com',
+            //     subject: 'Signup success',
+            //     html: '<h1>회원가입에 성공하셨습니다.</h1>'
+            // });
         })
         .catch(err => {
-            console.log(err);
-        })
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 };
 
 exports.getReset = (req, res, next) => {
@@ -203,7 +209,9 @@ exports.postReset = (req, res, next) => {
                 });
             })
             .catch(err => {
-                console.log(err);
+                const error = new Error(err);
+                error.httpStatusCode = 500;
+                return next(error);
             });
     })
 }
@@ -227,8 +235,10 @@ exports.getUpdatepw = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err)
-        })
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
+        });
 }
 
 exports.postUpdatepw = (req, res, next) => {
@@ -243,7 +253,7 @@ exports.postUpdatepw = (req, res, next) => {
     })
         .then(user => {
             resetUser = user;
-            return bcrypt.hash(newPassword, 12);
+            return bcrypt.hash(updatepw, 12);
         })
         .then(hashedPassword => {
             resetUser.password = hashedPassword;
@@ -255,6 +265,8 @@ exports.postUpdatepw = (req, res, next) => {
             res.redirect('/login');
         })
         .catch(err => {
-            console.log(err);
+            const error = new Error(err);
+            error.httpStatusCode = 500;
+            return next(error);
         });
 }

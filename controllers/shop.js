@@ -13,7 +13,9 @@ exports.getProducts = (req, res, next) => {
       })
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -25,12 +27,12 @@ exports.getProduct = (req, res, next) => {
         product: product,
         pageTitle: product.title,
         path: '/products',
-        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => {
-      console.log(err)
-    })
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);    })
 };
 
 exports.getIndex = (req, res, next) => {
@@ -43,8 +45,10 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
-    })
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.getCart = (req, res, next) => {
@@ -60,8 +64,10 @@ exports.getCart = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err)
-    })
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postCart = (req, res, next) => {
@@ -73,6 +79,11 @@ exports.postCart = (req, res, next) => {
     .then(result => {
       console.log(result);
       res.redirect('/cart')
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -84,8 +95,10 @@ exports.postCartDeleteProducts = (req, res, next) => {
       res.redirect('/cart');
     })
     .catch(err => {
-      console.log(err)
-    })
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 exports.postOrder = (req, res, next) => {
@@ -111,7 +124,9 @@ exports.postOrder = (req, res, next) => {
       res.redirect('/orders');
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 }
 
@@ -122,42 +137,11 @@ exports.getOrders = (req, res, next) => {
         pageTitle: 'orders',
         path: '/orders',
         orders: orders,
-        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
-
-  // let fetchedCart;
-  // let newQuantity = 1;
-  // req.user
-  //   .getCart()
-  //   .then(cart => {
-  //     fetchedCart = cart;
-  //     return cart.getProducts({ where: { id: prodId }});
-  //   })
-  //   .then(products => {
-  //     let product;
-  //     if( products.length > 0){
-  //       product = products[0];
-  //     }
-  //     if( product ){
-  //       const oldQuantity = product.cartItem.quantity;
-  //       newQuantity = oldQuantity + 1;
-  //       return product;
-  //     }
-  //     return Product.findByPk(prodId)
-  //   })
-  //   .then(product => {
-  //     return fetchedCart.addProduct(product, {
-  //       through: { quantity: newQuantity }
-  //     });
-  //   })
-  //   .then(
-  //     res.redirect('/cart')
-  //   )
-  //   .catch(err => {
-  //     console.log(err)
-  //   }) 
