@@ -109,7 +109,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.postEditProduct = (req, res, next) => {
   const prodId = req.body.productId;
   const updatedTitle = req.body.title;
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.file;
   const updatedPrice = req.body.price;
   const updatedDescription = req.body.description;
   
@@ -123,9 +123,8 @@ exports.postEditProduct = (req, res, next) => {
       hasError: true,
       product: {
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         price: updatedPrice,
-        description: updatedDesc,
+        description: updatedDescription,
         _id: prodId
       },
       errorMessage: errors.array()[0].msg,
@@ -139,16 +138,17 @@ exports.postEditProduct = (req, res, next) => {
       return res.redirect('/');
     }
       product.title = updatedTitle;
-      product.imageUrl = updatedImageUrl;
       product.price = updatedPrice;
       product.description = updatedDescription;
+      if (image) {
+        product.imageUrl = image.path;
+      }
       return product.save()
       .then(result => {
         console.log('UPDATED PRODUCT!');
         res.redirect('/admin/products');
       })
-    }
-  )
+    })
   .catch(err => {
     const error = new Error(err);
     error.httpStatusCode = 500;
