@@ -141,6 +141,7 @@ exports.postEditProduct = (req, res, next) => {
       product.price = updatedPrice;
       product.description = updatedDescription;
       if (image) {
+        fileHelper.deleteFile(product.imageUrl);
         product.imageUrl = image.path;
       }
       return product.save()
@@ -176,14 +177,21 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProducts = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.deleteOne({_id: prodId, userId: req.user._id})
-    .then(() => {
-      console.log('DELETE PRODUCT!');
-      res.redirect('/admin/products');
-    })
-    .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
-    })
+  Product.findById(prodId)
+  .then(product => {
+    if(!product) {
+      return next(new Error('제품을 찾을 수 없습니다.'))
+    }
+    fileHelper.deleteFile(product.imageUrl);
+    return Product.deleteOne({_id: prodId, userId: req.user._id});
+  })
+  .then(() => {
+    console.log('제품을 삭제했습니다.');
+    res.redirect('/admin/products');
+  })
+  .catch(err => {
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error);
+  })
 };
