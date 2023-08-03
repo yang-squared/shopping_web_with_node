@@ -32,7 +32,7 @@ exports.postAddProduct = (req, res, next) => {
         price: price,
         description: description
       },
-      errorMessage: 'Attached file is not an image.',
+      errorMessage: '이미지 파일을 찾을 수 없습니다.',
       validationErrors: []
     });
   }
