@@ -33,6 +33,7 @@
     "pdfkit": "^0.13.0",
     "pug": "^3.0.2",
     "sendgrid-nodejs": "^0.1.0-2",
-    "sequelize": "^6.28.0"
+    "sequelize": "^6.28.0",
+    "stripe": "^12.17.0"
   }
 }
