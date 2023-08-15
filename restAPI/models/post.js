@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const Schegma = mongoose.Schegma;
+const Schema = mongoose.Schema;
 
-const postSchgma = new Schegma({
+const postSchema = new Schema({
     title: {
         type: String,
-        required: ture
+        required: true
     },
     imageUrl: {
         type: String,
@@ -12,7 +12,7 @@ const postSchgma = new Schegma({
     },
     content: {
         type: String,
-        required: ture
+        required: true
     },
     creator: {
         type: Object,
@@ -22,4 +22,4 @@ const postSchgma = new Schegma({
     { timestamps: true }
 );
 
-module.exports = mongoose.model('Post', postSchgma);
+module.exports = mongoose.model('Post', postSchema);
