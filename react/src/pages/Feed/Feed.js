@@ -121,7 +121,6 @@ class Feed extends Component {
         content: postData.content
       })
     })
-    fetch(url)
       .then(res => {
         if (res.status !== 200 && res.status !== 201) {
           throw new Error('Creating or editing a post failed!');
