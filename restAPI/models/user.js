@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-const { required } = require('../../react/src/util/validators');
 const Schema = mongoose.Schema;
 
-const user = new Schema({
+const userSchema = new Schema({
     email: {
         type: String,
         required: true
@@ -17,7 +16,7 @@ const user = new Schema({
     },
     status: {
         type: String,
-        requried: true
+        default: 'New user'
     },
     posts: [
         {
