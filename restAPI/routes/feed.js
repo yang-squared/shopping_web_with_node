@@ -28,16 +28,17 @@ router.get('/post/:postId', isAuth, feedController.getPost);
 
 router.put(
     '/post/:postId',
-    isAuth, 
+    isAuth,
     [
-    body('title')
-        .trim()
-        .isLength({ min: 5 }),
-    body('content')
-        .trim()
-        .isLength({ min: 5 })
+        body('title')
+            .trim()
+            .isLength({ min: 5 }),
+        body('content')
+            .trim()
+            .isLength({ min: 5 })
     ],
-    feedController.updatedpost);
+    feedController.updatedpost
+);
 
 router.delete('/post/:postId', isAuth, feedController.deletePost);
 
