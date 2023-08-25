@@ -2,13 +2,13 @@ let io;
 
 module.exports = {
     init: httpServer => {
-        require('socket.io')(httpServer)(httpServer);
+        io = require('socket.io')(httpServer);
         return io;
     },
-    getIo: () => {
+    getIO: () => {
         if (!io) {
             throw new Error('Socket.io not initialized');
         }
         return io;
     }
-}
+};
