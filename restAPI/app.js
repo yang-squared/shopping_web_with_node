@@ -17,6 +17,7 @@ const mongodb_Uri = process.env.db_key;
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const { graphql } = require('graphql');
 
 
 const app = express();
@@ -58,7 +59,8 @@ app.use(
     '/graphql',
     graphqlHttp({
         schema: graphqlSchema,
-        rootValue: graphqlResolver
+        rootValue: graphqlResolver,
+        graphql: true
     })
 );
 
