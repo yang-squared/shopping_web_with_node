@@ -5,6 +5,10 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
+const { graphqlHttp } = require('express-graphql');
+
+const graphqlSchema = require('./graphql/schema');
+const graphqlResolver = require('./graphql/resolvers');
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -18,10 +22,10 @@ const authRoutes = require('./routes/auth');
 const app = express();
 
 const fileStorage = multer.diskStorage({
-    destination: function(req, file, cb) {
+    destination: function (req, file, cb) {
         cb(null, 'images');
     },
-    filename: function(req, file, cb) {
+    filename: function (req, file, cb) {
         cb(null, uuidv4())
     }
 });
@@ -49,6 +53,14 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 });
+
+app.use(
+    '/graphql',
+    graphqlHttp({
+        schema: graphqlSchema,
+        rootValue: graphqlResolver
+    })
+);
 
 app.use('/feed', feedRoutes);
 app.use('/auth', authRoutes);
