@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const { graphqlHttp } = require('express-graphql');
+const graphqlHttp = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
@@ -52,6 +52,9 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200)
+    }
     next();
 });
 
@@ -60,7 +63,16 @@ app.use(
     graphqlHttp({
         schema: graphqlSchema,
         rootValue: graphqlResolver,
-        graphql: true
+        graphql: true,
+        formatError(err) {
+            if (!err.originalError) {
+                return err;
+            }
+            const data = err.originalError.data;
+            const message = err.message || 'An error occurred.';
+            const code  = err.originalError.code || 500;
+            return { message: message, status: code, data: data };
+        }
     })
 );
 
