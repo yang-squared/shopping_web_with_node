@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const graphqlHttp = require('express-graphql');
+const { graphqlHttp } = require('express-graphql');
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
