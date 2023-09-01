@@ -5,20 +5,16 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const multer = require('multer');
 const { v4: uuidv4 } = require('uuid');
-const { graphqlHttp } = require('express-graphql');
+const graphqlHTTP = require('express-graphql').graphqlHTTP;
 
 const graphqlSchema = require('./graphql/schema');
 const graphqlResolver = require('./graphql/resolvers');
+const auth = require('./middleware/is-auth');
 
 const dotenv = require('dotenv');
 dotenv.config();
 
 const mongodb_Uri = process.env.db_key;
-
-const feedRoutes = require('./routes/feed');
-const authRoutes = require('./routes/auth');
-const { graphql } = require('graphql');
-
 
 const app = express();
 
@@ -58,9 +54,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(auth)
+
 app.use(
     '/graphql',
-    graphqlHttp({
+    graphqlHTTP({
         schema: graphqlSchema,
         rootValue: graphqlResolver,
         graphql: true,
@@ -76,9 +74,6 @@ app.use(
     })
 );
 
-app.use('/feed', feedRoutes);
-app.use('/auth', authRoutes);
-
 app.use((error, req, res, next) => {
     console.log(error);
     const status = error.statusCode || 500;
@@ -90,11 +85,7 @@ app.use((error, req, res, next) => {
 mongoose
     .connect(mongodb_Uri)
     .then(result => {
-        const server = app.listen(8080);
-        const io = require('./socket').init(server);
-        io.on('connection', socket => {
-            console.log('Client connected');
-        })
+        app.listen(8080);
     })
     .catch(err => {
         console.log(err);
