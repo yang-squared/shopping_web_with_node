@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 const Post = require('../models/post');
+const user = require('../models/user');
 
 module.exports = {
     createUser: async function ({ userInput }, req) {
@@ -92,7 +93,8 @@ module.exports = {
             imageUrl: postInput.imageUrl
         });
         const createdPost = await post.save();
-        // Add post to users' posts
+        user.posts.push(createdPost);
+        await user.save();
         return {
             ...createdPost._doc,
             _id: createdPost._id.toString(),
@@ -126,16 +128,16 @@ module.exports = {
     createPost: async function ({ postInput }, req) {
         const errors = [];
         if (
-            validator.isEmpty(postInput.title) || 
+            validator.isEmpty(postInput.title) ||
             !validator.isLength(postInput.title, { min: 5 })
         ) {
-            errors.push({ message: 'Title is invalid'});
+            errors.push({ message: 'Title is invalid' });
         }
         if (
-            validator.isEmpty(postInput.content) || 
+            validator.isEmpty(postInput.content) ||
             !validator.isLength(postInput.content, { min: 5 })
         ) {
-            errors.push({ message: 'Content is invalid'});
+            errors.push({ message: 'Content is invalid' });
         }
         if (errors.length > 0) {
             const error = new Error('Invalid input.');
@@ -158,10 +160,32 @@ module.exports = {
         const createdPost = await post.save();
         user.posts.push(createdPost);
         return {
-            ...createdPost._doc, 
-            _id: createdPost._id.toString(), 
+            ...createdPost._doc,
+            _id: createdPost._id.toString(),
             createdAt: createdPost.createdAt.toISOString(),
             updatedAt: createdPost.updatedAt.toISOString()
-        }  
+        }
+    },
+    posts: async function (args, res) {
+        if (!req.isAuth) {
+            const error = new Error('Not authenticated');
+            error.code = 401;
+            throw error;
+        }
+        const totalPosts = await Post.find().countDocuments();
+        const posts = await Post.find()
+            .sort({ createdAt: -1 })
+            .populate('creator');
+        return {
+            posts: posts.map(p => {
+                return {
+                    ...p._dac,
+                    _id: p._id.toString(),
+                    createdAt: p.createdAt.toISOString,
+                    updatedAt: p.updatedAt.toISOString
+                };
+            }),
+            totalPosts: totalPosts
+        };
     }
 };
