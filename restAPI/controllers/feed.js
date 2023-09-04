@@ -82,7 +82,6 @@ exports.createPost = async (req, res, next) => {
     }
     next(err);
   }
-
 };
 
 exports.getPost = async (req, res, next) => {
