@@ -39,7 +39,6 @@ class Feed extends Component {
       .catch(this.catchError);
 
     this.loadPosts();
-   
   }
 
   loadPosts = direction => {
@@ -63,7 +62,6 @@ class Feed extends Component {
               _id
               title
               content
-              imageUrl
               creator {
                 name
               }
